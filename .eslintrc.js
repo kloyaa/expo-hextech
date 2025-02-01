@@ -5,12 +5,14 @@ module.exports = {
     'plugin:@typescript-eslint/recommended', // TypeScript recommended rules
     'plugin:react/recommended', // React recommended rules
     'plugin:react-native/all', // React Native specific rules
+    'prettier', // This enables eslint-plugin-prettier and eslint-config-prettier. This will display prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
   ],
   parser: '@typescript-eslint/parser', // Use the TypeScript parser
   plugins: [
     '@typescript-eslint', // TypeScript plugin
     'react', // React plugin
     'react-native', // React Native plugin
+    'prettier', // This is required to use the rules from eslint-plugin-prettier.
   ],
   rules: {
     // Add custom rules or override defaults here
@@ -28,6 +30,7 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'warn', // Warn on non-null assertions (`!`)
     '@typescript-eslint/ban-ts-comment': 'warn', // Warn on TypeScript directive comments (`@ts-ignore`, `@ts-expect-error`)
     '@typescript-eslint/no-empty-interface': 'warn', // Warn on empty interfaces
+    "prettier/prettier": "error" // or "warn"
   },
   settings: {
     react: {
