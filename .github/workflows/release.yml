@@ -104,7 +104,7 @@ jobs:
       - name: Semantic Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }} # Only if publishing to npm
+          # NPM_TOKEN: ${{ secrets.NPM_TOKEN }} # Only if publishing to npm
         run: npx semantic-release
 
       - name: Publish update to Expo (if semantic-release didn't create a release)
