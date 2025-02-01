@@ -1,10 +1,12 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 import React from "react";
-import { Tabs, Redirect } from "expo-router";
+import { Tabs } from "expo-router";
 
 import { icons } from "../../constants";
+import { ITabIconProps } from "@/interfaces/tabIcon.interface";
 
-const TabIcon = ({ icon, color, name, focused }) => {
+const TabIcon = (props: ITabIconProps): JSX.Element => {
+  const { icon, color, name, focused } = props;
   return (
     <View className="flex justify-center items-center gap-2">
       <Image
@@ -15,14 +17,14 @@ const TabIcon = ({ icon, color, name, focused }) => {
       />
       <Text
         className={`${focused ? "font-psemibold" : "font-pregular"} text-xs w-full text-gray-500`}
-        style={{ color}}
+        style={{ color }}
       >
         {name}
       </Text>
     </View>
   );
 };
-const TabsLayout = () => {
+const TabsLayout = (): JSX.Element => {
   return (
     <>
       <Tabs

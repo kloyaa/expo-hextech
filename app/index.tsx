@@ -1,4 +1,4 @@
-import { View, ScrollView, Image, Text } from "react-native";
+import { View, ScrollView, Image, Text, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 
@@ -6,10 +6,10 @@ import { router } from "expo-router";
 import CustomButton from "../components/custom-buttom";
 import { images } from "../constants";
 
-export default function App() {
+export default function App(): JSX.Element {
   return (
     <SafeAreaView className="bg-primary h-full">
-      <ScrollView contentContainerStyle={{ height: "100%" }}>
+      <ScrollView contentContainerStyle={styles.scrollViewContentContainerStyle}>
         <View className="w-full flex justify-between items-center h-full px-4 py-5">
           <View className="flex justify-center items-center w-full">
             <Image
@@ -37,8 +37,8 @@ export default function App() {
           <View className="w-full flex justify-center items-center">
             <CustomButton
               title={"Get started"}
-              containerStyles={{ width: "100%" }}
-              textStyles={{ fontSize: 14 }}
+              containerStyles={styles.customButtonSignInContainerStyles}
+              textStyles={styles.customButtonSignInTextStyles}
               handlePress={() => {
                 router.push("/sign-in");
               }}
@@ -48,8 +48,8 @@ export default function App() {
             </Text>
             <CustomButton
               title={"Don't have an account?"}
-              containerStyles={{ backgroundColor: "#2c2c42", width: "100%" }}
-              textStyles={{ fontSize: 12, color: "#fff", fontWeight: "400" }}
+              textStyles={styles.customButtonSignUpTextStyles}
+              containerStyles={styles.customButtonSignUpContainerStyles}
               handlePress={() => {
                 router.push("/sign-up");
               }}
@@ -62,3 +62,24 @@ export default function App() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  customButtonSignInContainerStyles: {
+    width: "100%"
+  },
+  customButtonSignInTextStyles: {
+    fontSize: 14
+  },
+  customButtonSignUpContainerStyles: {
+    backgroundColor: "#2c2c42",
+    width: "100%"
+  },
+  customButtonSignUpTextStyles: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "400"
+  },
+  scrollViewContentContainerStyle: {
+    height: "100%"
+  },
+});

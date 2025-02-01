@@ -5,21 +5,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants";
 import FormField from "../../components/form-field";
 import CustomButton from "@/components/custom-buttom";
+import { IFormState } from "@/interfaces/form.interface";
 
-interface FormState {
-  email: string;
-  password: string;
-}
-
-const SignIn = () => {
-  const [form, setForm] = useState<FormState>({
+const SignIn = (): JSX.Element => {
+  const [form, setForm] = useState<IFormState>({
     email: "",
     password: "",
   });
 
   return (
     <SafeAreaView className="bg-primary h-full">
-      <ScrollView contentContainerStyle={{ height: "100%" }}>
+      <ScrollView contentContainerStyle={styles.contentContainerStyle}>
         <View className="w-full flex justify-between items-start h-full px-4 py-5">
           <View className="flex justify-start items-start w-full">
             <Image
@@ -63,8 +59,8 @@ const SignIn = () => {
 
           <CustomButton
             title={"Sign in"}
-            containerStyles={{ width: "100%" }}
-            textStyles={{ fontSize: 14 }}
+            containerStyles={styles.customButtonSignInContainerStyles}
+            textStyles={styles.customButtonSignInTextStyles}
             handlePress={() => {
               // router.push("/sign-in");
             }}
@@ -77,4 +73,14 @@ const SignIn = () => {
 
 export default SignIn;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  contentContainerStyle: {
+    height: "100%",
+  },
+  customButtonSignInContainerStyles: {
+    width: "100%",
+  },
+  customButtonSignInTextStyles: {
+    fontSize: 14
+  }
+});
