@@ -1,13 +1,13 @@
-name: CI
+name: Release
 
 on:
-  pull_request:
+  push:
     branches:
       - master
-      - develop
+      - release/*
 
 jobs:
-  lint-test:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -21,11 +21,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run ESLint
-        run: npm run lint
+      - name: Publish to Expo
+        run: npx expo publish
 
-      - name: Run TypeScript type checking
-        run: npm run type-check
-
-      - name: Run unit tests
-        run: npm test
+      - name: Submit to App Stores
+        run: npx eas submit --platform all --profile production

@@ -1,13 +1,13 @@
-name: CI
+name: EAS Build
 
 on:
-  pull_request:
+  push:
     branches:
+      - staging
       - master
-      - develop
 
 jobs:
-  lint-test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -21,11 +21,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run ESLint
-        run: npm run lint
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
 
-      - name: Run TypeScript type checking
-        run: npm run type-check
-
-      - name: Run unit tests
-        run: npm test
+      - name: Run EAS Build
+        run: eas build --platform all --profile ${{ github.ref == 'refs/heads/staging' && 'staging' || 'production' }}

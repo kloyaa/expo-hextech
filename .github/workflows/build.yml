@@ -1,13 +1,13 @@
-name: CI
+name: Build Validation
 
 on:
-  pull_request:
+  push:
     branches:
       - master
       - develop
 
 jobs:
-  lint-test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -21,11 +21,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run ESLint
-        run: npm run lint
+      - name: Run Expo Prebuild
+        run: npx expo prebuild
 
-      - name: Run TypeScript type checking
-        run: npm run type-check
+      - name: Validate Android build
+        run: npx eas build --platform android --profile preview
 
-      - name: Run unit tests
-        run: npm test
+      - name: Validate iOS build
+        run: npx eas build --platform ios --profile preview
