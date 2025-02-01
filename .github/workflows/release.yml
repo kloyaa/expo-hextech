@@ -23,10 +23,6 @@ jobs:
         with:
           node-version: '20.x'
 
-      # Install EAS CLI globally
-      - name: Install EAS CLI
-        run: npm install -g eas-cli
-
       # Set up Expo
       - name: Set up Expo
         uses: expo/expo-github-action@v8
@@ -74,6 +70,10 @@ jobs:
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: gradle-${{ runner.os }}-
 
+      # Install EAS CLI globally
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+        
       # Build Android app with EAS
       - name: Build Android app
         run: |
