@@ -70,27 +70,27 @@ const styles = StyleSheet.create({
   container: {
     marginBottom: 15,
   },
+  icon: {
+    padding: 10,
+  },
+  input: {
+    color: "#fff",
+    flex: 1,
+    height: 40,
+  },
+  inputContainer: {
+    alignItems: "center",
+    borderColor: "#ccc",
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: "row",
+    height: 50,
+    paddingHorizontal: 10,
+  },
   title: {
     color: "#fff",
     fontSize: 14,
     marginBottom: 5,
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    height: 50,
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    color: "#fff",
-  },
-  icon: {
-    padding: 10,
   },
 });
 

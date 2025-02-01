@@ -6,7 +6,9 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     }
   },
   "include": [
@@ -14,9 +16,6 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "nativewind-env.d.ts",
-    "constants/index.js",
-    "constants/images.js",
-    "constants/icons.js"
+    "nativewind-env.d.ts"
   ]
 }

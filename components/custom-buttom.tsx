@@ -29,9 +29,9 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   return (
     <TouchableOpacity
       style={[
+        containerStyles, // Custom container styles
         styles.buttonContainer,
         disabled && styles.disabledButton, // Conditional style for disabled state
-        containerStyles, // Custom container styles
         // isLoading && { opacity: 0.5 },
       ]}
       className="rounded-xl min-h-[52px] flex justify-center items-center"
@@ -59,12 +59,12 @@ export default CustomButton;
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    paddingHorizontal: 24,
-    minHeight: 52,
-    justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#FF9F1C",
     borderRadius: 12,
-    backgroundColor: "#FF9F1C", // Default background color
+    justifyContent: "center",
+    minHeight: 52,
+    paddingHorizontal: 24, // Default background color
   },
   buttonText: {
     color: "#161622", // Default text color
