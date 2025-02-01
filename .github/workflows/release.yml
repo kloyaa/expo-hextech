@@ -21,8 +21,15 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Publish to Expo
-        run: npx expo publish
+      - name: Set up Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Submit to App Stores
-        run: npx eas submit --platform all --profile production
+      - name: Publish update to Expo
+        run: npx eas update --branch production --message "Automated update from GitHub Actions"
+
+      # - name: Submit to App Stores
+      #   run: npx eas submit --platform all --profile production
