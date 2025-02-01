@@ -8,83 +8,11 @@ on:
       - release/* # Trigger workflow on pushes to branches starting with "release/" (for release candidates)
 
 jobs:
-  setup: # Job to set up the environment and get the app version
+  setup:
     name: Setup Environment and Get App Version
-    runs-on: ubuntu-latest # Use the latest Ubuntu runner
-    outputs: # Define outputs that can be used by other jobs
+    runs-on: ubuntu-latest
+    outputs:
       app_version: ${{ steps.get_app_version.outputs.app_version }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3 # Checkout the repository code
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3 # Set up Node.js environment
-        with:
-          node-version: '20.x' # Specify Node.js version (use a specific LTS version for consistency)
-
-      - name: Install project dependencies
-        run: npm ci # Install dependencies from package-lock.json (faster and more reliable)
-
-      - name: Get App Version from package.json
-        id: get_app_version # Set an ID for this step to access its outputs
-        shell: bash # Explicitly set shell to bash for consistent variable expansion
-        run: |
-          APP_VERSION=$(node -p "require('./package.json').version") # Extract version from package.json
-          echo "app_version=$APP_VERSION" >> $GITHUB_OUTPUT # Set the app_version output for other jobs
-          echo "App Version: $APP_VERSION" # Log the app version for debugging
-
-  build-android: # Job to build the Android app
-    name: Build Android App
-    needs: setup # This job depends on the 'setup' job
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3 # Set up Java Development Kit
-        with:
-          java-version: '17' # Specify Java version
-          distribution: 'temurin' # Use the Temurin distribution
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3 # Set up the Android SDK
-
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v3 # Cache Gradle dependencies for faster builds
-        with:
-          path: ~/.gradle/caches # Path to Gradle cache
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }} # Cache key
-          restore-keys: gradle-${{ runner.os }}- # Restore keys for partial cache hits
-
-      - name: Install EAS CLI
-        run: npm install -g eas-cli # Install the EAS CLI globally (consider local install with npx)
-
-      - name: Set up Expo
-        uses: expo/expo-github-action@v8 # Set up Expo environment
-        with:
-          expo-version: latest # Specify Expo SDK version (pin for consistency)
-          eas-version: latest # Specify EAS CLI version (pin for consistency)
-          token: ${{ secrets.EXPO_TOKEN }} # Expo access token (stored as a secret)
-
-      - name: Install project dependencies
-        run: npm ci # Install dependencies (might be redundant after Expo setup - review)
-
-      - name: Build Android app with EAS
-        run: |
-          eas build --platform android --profile preview --local --output ${{ github.workspace }}/app-release-${{ needs.setup.outputs.app_version }}.apk # Build the Android app locally
-
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4 # Upload the APK as an artifact
-        with:
-          name: app-release-${{ needs.setup.outputs.app_version }} # Artifact name
-          path: ${{ github.workspace }}/app-release-${{ needs.setup.outputs.app_version }}.apk # Path to the APK
-
-  release: # Job to release the app update to Expo
-    name: Publish Update to Expo
-    needs: build-android # This job depends on the 'build-android' job
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' # Only run on pushes to the master branch (production)
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -92,20 +20,93 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20.x'
-
-      - name: Install EAS CLI
-        run: npm install -g eas-cli
-
-      - name: Set up Expo
-        uses: expo/expo-github-action@v8
-        with:
-          expo-version: latest # Pin Expo SDK Version
-          eas-version: latest # Pin EAS CLI Version
-          token: ${{ secrets.EXPO_TOKEN }}
+          node-version: '20.x' # Use a specific LTS version (e.g., 20.10.0)
 
       - name: Install project dependencies
         run: npm ci
 
-      - name: Publish update to Expo
-        run: npx eas update --branch production --message "Automated update from GitHub Actions - v${{ needs.setup.outputs.app_version }}" # Publish the update to Expo (consider EAS submit for production release)
+      - name: Get App Version from package.json
+        id: get_app_version
+        shell: bash
+        run: |
+          APP_VERSION=$(node -p "require('./package.json').version")
+          echo "app_version=$APP_VERSION" >> $GITHUB_OUTPUT
+          echo "App Version: $APP_VERSION"
+
+  build-android:
+    name: Build Android App
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: Install EAS CLI
+        run: npm install -g eas-cli # Or use a local install with npx
+
+      - name: Set up Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest # Pin Expo SDK version for consistency
+          eas-version: latest # Pin EAS CLI version for consistency
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install project dependencies
+        run: npm ci # Review if this is needed after Expo setup
+
+      - name: Build Android app with EAS
+        run: |
+          eas build --platform android --profile preview --local --output ${{ github.workspace }}/app-release-${{ needs.setup.outputs.app_version }}.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-${{ needs.setup.outputs.app_version }}
+          path: ${{ github.workspace }}/app-release-${{ needs.setup.outputs.app_version }}.apk
+
+  release:
+    name: Release and Publish to Expo
+    needs: build-android
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' # Only run on pushes to master
+    permissions:
+      contents: write # Grant write access for creating releases and tags
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Important for semantic-release
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }} # Only if publishing to npm
+        run: npx semantic-release
+
+      - name: Publish update to Expo (if semantic-release didn't create a release)
+        if: steps.semantic_release.outcome != 'success' # Check if semantic-release created a release
+        run: npx eas update --branch production --message "Automated update from GitHub Actions - v${{ needs.setup.outputs.app_version }}" # Or eas submit for production release
