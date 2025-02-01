@@ -1,0 +1,36 @@
+name: Setup Node.js and Expo
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: 'Node.js version to use'
+        required: true
+        default: '20.x'
+      expo-version:
+        description: 'Expo version'
+        required: true
+        default: 'latest'
+      eas-version:
+        description: 'EAS version'
+        required: true
+        default: 'latest'
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: Set up Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: ${{ inputs.expo-version }}
+          eas-version: ${{ inputs.eas-version }}
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
