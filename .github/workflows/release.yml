@@ -10,6 +10,8 @@ on:
 jobs:
   setup:
     runs-on: ubuntu-latest
+    outputs:
+      app_version: ${{ steps.get_app_version.outputs.app_version }}
     steps:
       # Checkout code
       - name: Checkout code
@@ -21,7 +23,11 @@ jobs:
         with:
           node-version: '20.x'
 
-      # Set up Expo and EAS
+      # Install EAS CLI globally
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
+      # Set up Expo
       - name: Set up Expo
         uses: expo/expo-github-action@v8
         with:
@@ -29,20 +35,26 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      # Install dependencies
+      # Install project dependencies
       - name: Install dependencies
         run: npm ci
 
-      # Set APP_VERSION from package.json
+      # Get App Version from package.json
       - name: Get App Version
+        id: get_app_version
         run: |
           APP_VERSION=$(node -p "require('./package.json').version")
           echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
-          
+          echo "app_version=$APP_VERSION" >> $GITHUB_OUTPUT
+
   build:
-    needs: setup  # This job will run after the setup job completes
+    needs: setup  # Depends on the setup job
     runs-on: ubuntu-latest
     steps:
+      # Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       # Set up JDK 17 for Android build
       - name: Set up JDK 17
         uses: actions/setup-java@v3
@@ -64,29 +76,35 @@ jobs:
 
       # Build Android app with EAS
       - name: Build Android app
-        run: eas build --platform android --profile preview --local --output ${{ github.workspace }}/app-release-${{ env.APP_VERSION }}.apk
+        run: |
+          eas build --platform android --profile preview --local --output ${{ github.workspace }}/app-release-${{ needs.setup.outputs.app_version }}.apk
 
       # Upload APK artifact
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-release-${{ env.APP_VERSION }}
-          path: ${{ github.workspace }}/app-release-${{ env.APP_VERSION }}.apk
+          name: app-release-${{ needs.setup.outputs.app_version }}
+          path: ${{ github.workspace }}/app-release-${{ needs.setup.outputs.app_version }}.apk
 
   release:
-    needs: build  # This job runs after the build job completes
+    needs: build  # Depends on the build job
     runs-on: ubuntu-latest
     steps:
-      # Checkout the code again in case it's needed for Expo update
+      # Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up Node.js, Expo, and install dependencies
-      - name: Set up Node.js, Expo, and Install Dependencies
+      # Set up Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
 
+      # Install EAS CLI globally
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
+      # Set up Expo
       - name: Set up Expo
         uses: expo/expo-github-action@v8
         with:
@@ -94,7 +112,7 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      # Install dependencies again in case the environment changed
+      # Install project dependencies
       - name: Install dependencies
         run: npm ci
 
