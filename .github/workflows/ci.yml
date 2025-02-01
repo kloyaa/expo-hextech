@@ -16,10 +16,10 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20.x
+          node-version: 20.10.0 # Or your preferred LTS version
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run ESLint
         run: npm run lint
@@ -27,5 +27,9 @@ jobs:
       - name: Run TypeScript type checking
         run: npm run type-check
 
-      # - name: Run unit tests
+      - name: Run Prettier (style check)
+        run: npm run format # Or npx prettier --check . if you only want to check, not reformat
+
+
+      # - name: Run unit tests  # Uncomment and configure when you have tests
       #   run: npm test

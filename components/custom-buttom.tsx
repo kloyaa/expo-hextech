@@ -5,8 +5,8 @@ import {
   ViewStyle,
   TextStyle,
   ActivityIndicator,
-} from "react-native";
-import React from "react";
+} from 'react-native';
+import React from 'react';
 
 // Define the props interface
 interface CustomButtonProps {
@@ -38,17 +38,11 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       onPress={handlePress}
       disabled={disabled || isLoading} // Disable button when loading
     >
-      <Text
-        style={[styles.buttonText, textStyles]}
-      >
+      <Text style={[styles.buttonText, textStyles]}>
         {isLoading ? (
           <ActivityIndicator color="#161622" /> // Show spinner when loading
         ) : (
-          <Text
-            style={[styles.buttonText, textStyles]}
-          >
-            {title}
-          </Text>
+          <Text style={[styles.buttonText, textStyles]}>{title}</Text>
         )}
       </Text>
     </TouchableOpacity>
@@ -59,19 +53,19 @@ export default CustomButton;
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    alignItems: "center",
-    backgroundColor: "#FF9F1C",
+    alignItems: 'center',
+    backgroundColor: '#FF9F1C',
     borderRadius: 12,
-    justifyContent: "center",
+    justifyContent: 'center',
     minHeight: 52,
     paddingHorizontal: 24, // Default background color
   },
   buttonText: {
-    color: "#161622", // Default text color
+    color: '#161622', // Default text color
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   disabledButton: {
-    backgroundColor: "#CCCCCC", // Grayed-out background for disabled state
+    backgroundColor: '#CCCCCC', // Grayed-out background for disabled state
   },
 });

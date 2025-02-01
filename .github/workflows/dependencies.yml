@@ -2,7 +2,7 @@ name: Dependency Updates
 
 on:
   schedule:
-    - cron: '0 0 * * 0' # Weekly
+    - cron: '0 0 * * 0' # Weekly (runs every Sunday at midnight UTC)
 
 jobs:
   update:
@@ -14,10 +14,21 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20.x
+          node-version: 20.x # Consider using a specific LTS version
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci # Use npm ci
 
       - name: Update dependencies
-        run: npx npm-check-updates -u
+        run: npx npm-check-updates -u # Consider adding --target minor or --target patch to limit major version updates
+
+      - name: Create Pull Request
+        uses: peter-murray/create-pull-request@v3 # Or another similar action
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: 'dependency-updates' # Create a new branch for the updates
+          title: 'Dependency Updates'
+          body: 'Automated dependency updates.'
+          commit-message: 'chore: update dependencies' # Better commit message
+          # Optional - assign reviewers
+          # reviewers: someuser, anotheruser
