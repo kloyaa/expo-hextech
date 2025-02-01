@@ -26,9 +26,9 @@ jobs:
         uses: peter-murray/create-pull-request@v3 # Or another similar action
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: "dependency-updates" # Create a new branch for the updates
-          title: "Dependency Updates"
-          body: "Automated dependency updates."
-          commit-message: "chore: update dependencies" # Better commit message
+          branch: 'dependency-updates' # Create a new branch for the updates
+          title: 'Dependency Updates'
+          body: 'Automated dependency updates.'
+          commit-message: 'chore: update dependencies' # Better commit message
           # Optional - assign reviewers
           # reviewers: someuser, anotheruser

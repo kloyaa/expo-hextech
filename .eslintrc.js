@@ -26,11 +26,11 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': 'warn', // Warn on unused variables
     '@typescript-eslint/no-explicit-any': 'warn', // Warn on using `any` type,
     '@typescript-eslint/explicit-function-return-type': 'warn', // Warn if return type is not explicitly defined
-    "@typescript-eslint/no-require-imports": "off", // Disable the rule globally
+    '@typescript-eslint/no-require-imports': 'off', // Disable the rule globally
     '@typescript-eslint/no-non-null-assertion': 'warn', // Warn on non-null assertions (`!`)
     '@typescript-eslint/ban-ts-comment': 'warn', // Warn on TypeScript directive comments (`@ts-ignore`, `@ts-expect-error`)
     '@typescript-eslint/no-empty-interface': 'warn', // Warn on empty interfaces
-    "prettier/prettier": "error" // or "warn"
+    'prettier/prettier': 'error', // or "warn"
   },
   settings: {
     react: {

@@ -7,9 +7,9 @@ import {
   ViewStyle,
   TextStyle,
   TouchableOpacity,
-} from "react-native";
-import React, { useState } from "react";
-import Ionicons from "react-native-vector-icons/Ionicons"; // Install if not available
+} from 'react-native';
+import React, { useState } from 'react';
+import Ionicons from 'react-native-vector-icons/Ionicons'; // Install if not available
 
 // Define the props interface
 interface FormFieldProps {
@@ -55,7 +55,7 @@ const FormField: React.FC<FormFieldProps> = ({
             style={styles.icon}
           >
             <Ionicons
-              name={togglePassword ? "eye" : "eye-off"}
+              name={togglePassword ? 'eye' : 'eye-off'}
               size={20}
               color="#7F7F7F"
             />
@@ -74,21 +74,21 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   input: {
-    color: "#fff",
+    color: '#fff',
     flex: 1,
     height: 40,
   },
   inputContainer: {
-    alignItems: "center",
-    borderColor: "#ccc",
+    alignItems: 'center',
+    borderColor: '#ccc',
     borderRadius: 8,
     borderWidth: 1,
-    flexDirection: "row",
+    flexDirection: 'row',
     height: 50,
     paddingHorizontal: 10,
   },
   title: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 14,
     marginBottom: 5,
   },

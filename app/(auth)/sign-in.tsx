@@ -1,16 +1,16 @@
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
-import React, { useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { images } from "../../constants";
-import FormField from "../../components/form-field";
-import CustomButton from "@/components/custom-buttom";
-import { IFormState } from "@/interfaces/form.interface";
+import { images } from '../../constants';
+import FormField from '../../components/form-field';
+import CustomButton from '@/components/custom-buttom';
+import { IFormState } from '@/interfaces/form.interface';
 
 const SignIn = (): JSX.Element => {
   const [form, setForm] = useState<IFormState>({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
 
   return (
@@ -48,17 +48,15 @@ const SignIn = (): JSX.Element => {
                     password: e,
                   });
                 }}
-                options={
-                  {
-                    isObscure: true,
-                  }
-                }
+                options={{
+                  isObscure: true,
+                }}
               />
             </View>
           </View>
 
           <CustomButton
-            title={"Sign in"}
+            title={'Sign in'}
             containerStyles={styles.customButtonSignInContainerStyles}
             textStyles={styles.customButtonSignInTextStyles}
             handlePress={() => {
@@ -75,12 +73,12 @@ export default SignIn;
 
 const styles = StyleSheet.create({
   contentContainerStyle: {
-    height: "100%",
+    height: '100%',
   },
   customButtonSignInContainerStyles: {
-    width: "100%",
+    width: '100%',
   },
   customButtonSignInTextStyles: {
-    fontSize: 14
-  }
+    fontSize: 14,
+  },
 });
