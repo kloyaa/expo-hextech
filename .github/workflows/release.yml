@@ -35,8 +35,10 @@ jobs:
 
       # Set APP_VERSION from package.json
       - name: Get App Version
-        run: echo "APP_VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_ENV
-
+        run: |
+          APP_VERSION=$(node -p "require('./package.json').version")
+          echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
+          
   build:
     needs: setup  # This job will run after the setup job completes
     runs-on: ubuntu-latest
