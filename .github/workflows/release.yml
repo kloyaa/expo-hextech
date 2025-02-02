@@ -64,7 +64,7 @@ jobs:
         uses: expo/expo-github-action@v8
         with:
           expo-version: latest # Pin Expo SDK Version!
-          eas-version: latest  # Pin EAS CLI Version!
+          eas-version: latest # Pin EAS CLI Version!
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install project dependencies (Review if truly needed)
@@ -84,7 +84,7 @@ jobs:
     name: Release and Publish to Expo
     needs: build-android
     runs-on: ubuntu-latest
-    # if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master'
     permissions:
       contents: write
     steps:

@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { images } from '../../constants';
-import FormField from '../../components/form-field';
 import CustomButton from '@/components/custom-buttom';
 import { IFormState } from '@/interfaces/form.interface';
+import FormField from '@/components/form-field';
 
 const SignIn = (): JSX.Element => {
   const [form, setForm] = useState<IFormState>({
