@@ -107,8 +107,8 @@ jobs:
       - name: Set up Expo
         uses: expo/expo-github-action@v8
         with:
-          expo-version: 49.0.0 # Pin Expo SDK Version!  Replace with your actual version
-          eas-version: latest # Pin EAS CLI Version! Replace with your actual version
+          expo-version: latest # Pin Expo SDK Version!
+          eas-version: latest # Pin EAS CLI Version!
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Semantic Release
