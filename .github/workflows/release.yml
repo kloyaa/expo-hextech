@@ -101,6 +101,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install EAS CLI
+        run: npm install -g eas-cli # Consider npx for local installs
+
+      - name: Set up Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest # Pin Expo SDK Version!
+          eas-version: latest # Pin EAS CLI Version!
+          token: ${{ secrets.EXPO_TOKEN }}
+          
       - name: Semantic Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
