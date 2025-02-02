@@ -80,55 +80,55 @@ jobs:
           name: app-release-${{ needs.setup.outputs.app_version }}
           path: ${{ github.workspace }}/app-release-${{ needs.setup.outputs.app_version }}.apk
 
-release:
-  name: Release and Publish to Expo
-  needs: build-android
-  runs-on: ubuntu-latest
-  if: github.ref == 'refs/heads/master'
-  permissions:
-    contents: write
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+  release:
+    name: Release and Publish to Expo
+    needs: build-android
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20.10.0' # Or your preferred LTS version
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.10.0' # Or your preferred LTS version
 
-    - name: Install dependencies
-      run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Install EAS CLI
-      run: npm install -g eas-cli  # Consider npx eas
+      - name: Install EAS CLI
+        run: npm install -g eas-cli  # Consider npx eas
 
-    - name: Set up Expo
-      uses: expo/expo-github-action@v8
-      with:
-        expo-version: 49.0.0 # Pin Expo SDK Version!  Replace with your actual version
-        eas-version: latest # Pin EAS CLI Version! Replace with your actual version
-        token: ${{ secrets.EXPO_TOKEN }}
+      - name: Set up Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: 49.0.0 # Pin Expo SDK Version!  Replace with your actual version
+          eas-version: latest # Pin EAS CLI Version! Replace with your actual version
+          token: ${{ secrets.EXPO_TOKEN }}
 
-    - name: Semantic Release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # NPM_TOKEN: ${{ secrets.NPM_TOKEN }} # Only if publishing to npm
-      id: semantic_release
-      run: npx semantic-release
+      - name: Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # NPM_TOKEN: ${{ secrets.NPM_TOKEN }} # Only if publishing to npm
+        id: semantic_release
+        run: npx semantic-release
 
-    - name: Build Expo app (Android)
-      if: steps.semantic_release.outcome == 'success' # Only build if semantic-release succeeded
-      run: eas build --platform android --profile production --clear-cache # Add --clear-cache to ensure a clean build
+      - name: Build Expo app (Android)
+        if: steps.semantic_release.outcome == 'success' # Only build if semantic-release succeeded
+        run: eas build --platform android --profile production --clear-cache # Add --clear-cache to ensure a clean build
 
-    # - name: Build Expo app (iOS)  # Uncomment if building for iOS
-    #   if: steps.semantic_release.outcome == 'success'
-    #   run: eas build --platform ios --profile production --clear-cache
+      # - name: Build Expo app (iOS)  # Uncomment if building for iOS
+      #   if: steps.semantic_release.outcome == 'success'
+      #   run: eas build --platform ios --profile production --clear-cache
 
-    - name: Upload artifacts
-      if: steps.semantic_release.outcome == 'success'  # Only upload if the build succeeded
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-builds-${{ needs.setup.outputs.app_version }} # Include version in artifact name
-        path: dist # Or the directory where your builds are located
+      - name: Upload artifacts
+        if: steps.semantic_release.outcome == 'success'  # Only upload if the build succeeded
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-builds-${{ needs.setup.outputs.app_version }} # Include version in artifact name
+          path: dist # Or the directory where your builds are located
