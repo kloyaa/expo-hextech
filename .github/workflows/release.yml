@@ -109,5 +109,5 @@ jobs:
         run: npx semantic-release
 
       - name: Publish update to Expo (Conditional)
-        if: steps.semantic_release.outcome != 'success'
+        # if: steps.semantic_release.outcome != 'success'
         run: npx eas update --branch production --message "Automated update from GitHub Actions - v${{ needs.setup.outputs.app_version }}" # Or eas submit

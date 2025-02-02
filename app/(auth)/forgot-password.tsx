@@ -9,4 +9,4 @@ const ForgotPassword = (): JSX.Element => {
     )
 }
 
-export default ForgotPassword
+export default ForgotPassword;
