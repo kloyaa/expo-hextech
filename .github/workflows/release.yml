@@ -65,7 +65,8 @@ jobs:
         with:
           expo-version: latest
           eas-version: latest
-          token: ${{ secrets.HSI_TEST_EXPO_TOKEN }}
+          # token: ${{ secrets.HSI_TEST_EXPO_TOKEN }}
+          token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Semantic Release
         env:
