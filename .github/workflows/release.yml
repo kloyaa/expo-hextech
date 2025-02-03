@@ -8,30 +8,30 @@ on:
       - release/*
 
 jobs:
-  # setup:
-  #   name: Setup Environment and Get App Version
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     app_version: ${{ steps.get_app_version.outputs.app_version }}
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v3
+  setup:
+    name: Setup Environment and Get App Version
+    runs-on: ubuntu-latest
+    outputs:
+      app_version: ${{ steps.get_app_version.outputs.app_version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-  #     - name: Set up Node.js
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: '20.10.0' # Specific LTS version
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.10.0' # Specific LTS version
 
-  #     - name: Install project dependencies
-  #       run: npm ci
+      - name: Install project dependencies
+        run: npm ci
 
-  #     - name: Get App Version from package.json
-  #       id: get_app_version
-  #       shell: bash
-  #       run: |
-  #         APP_VERSION=$(node -p "require('./package.json').version")
-  #         echo "app_version=$APP_VERSION" >> $GITHUB_OUTPUT
-  #         echo "App Version: $APP_VERSION"
+      - name: Get App Version from package.json
+        id: get_app_version
+        shell: bash
+        run: |
+          APP_VERSION=$(node -p "require('./package.json').version")
+          echo "app_version=$APP_VERSION" >> $GITHUB_OUTPUT
+          echo "App Version: $APP_VERSION"
 
   # build-android:
   #   name: Build Android App
