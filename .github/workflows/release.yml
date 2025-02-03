@@ -84,7 +84,7 @@ jobs:
     name: Release and Publish to Expo
     needs: build-android
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master' 
     permissions:
       contents: write
     steps:
@@ -121,6 +121,21 @@ jobs:
       - name: Build Expo app (Android)
         if: steps.semantic_release.outcome == 'success' # Only build if semantic-release succeeded
         run: eas build --platform android --profile production --clear-cache # Add --clear-cache to ensure a clean build
+    
+      - name: Find AAB file
+        if: steps.semantic_release.outcome == 'success'
+        id: find_aab
+        run: |
+          AAB_FILE=$(find . -name "*.aab" | head -n 1)
+          echo "::set-output name=aab_path::$AAB_FILE"
+
+      - name: Upload AAB to GitHub Release
+        if: steps.semantic_release.outcome == 'success'
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.semantic_release.outputs.upload_url }}
+          asset_path: ${{ steps.find_aab.outputs.aab_path }}
+          asset_name: app-release-${{ needs.setup.outputs.app_version }}.aab  # Or use ${{ steps.semantic_release.outputs.version }}
 
       # - name: Build Expo app (iOS)  # Uncomment if building for iOS
       #   if: steps.semantic_release.outcome == 'success'
