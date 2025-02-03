@@ -77,7 +77,7 @@ jobs:
         run: |
           set -e
           echo "Starting EAS build for Android..."
-          eas build --platform android --profile preview --output ${{ github.workspace }}/app-release.apk --no-wait
+          eas build --platform android --profile preview ${{ github.workspace }}/app-release.apk --no-wait
       
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
