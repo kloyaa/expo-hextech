@@ -20,14 +20,13 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20.10.0' # Specific LTS version
+          node-version: '20.10.0'
 
-      - name: Install project dependencies
+      - name: Install dependencies
         run: npm ci
 
       - name: Get App Version from package.json
         id: get_app_version
-        shell: bash
         run: |
           APP_VERSION=$(node -p "require('./package.json').version")
           echo "app_version=$APP_VERSION" >> $GITHUB_OUTPUT
@@ -47,44 +46,47 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: gradle-${{ runner.os }}-
-
       - name: Install EAS CLI
-        run: npm install -g eas-cli # Consider npx for local installs
+        run: npm install -g eas-cli
 
       - name: Set up Expo
         uses: expo/expo-github-action@v8
         with:
-          expo-version: latest # Pin Expo SDK Version!
-          eas-version: latest # Pin EAS CLI Version!
+          expo-version: latest
+          eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Install project dependencies (Review if truly needed)
-        run: npm ci
-
-      - name: Build Android app with EAS
+      - name: Build Android App with EAS
         run: |
-          eas build --platform android --profile preview --local --output ${{ github.workspace }}/app-release-${{ needs.setup.outputs.app_version }}.apk
+          eas build --platform android --profile production --non-interactive
 
-      - name: Upload APK artifact
+      # Fetch the latest AAB URL from Expo if using remote builds
+      - name: Get AAB URL
+        id: get_aab_url
+        run: |
+          BUILD_URL=$(eas build:list --json | jq -r '.[0].artifacts.buildUrl')
+          if [[ -z "$BUILD_URL" ]]; then
+            echo "::error::No AAB file found on Expo servers!"
+            exit 1
+          fi
+          echo "aab_url=$BUILD_URL" >> $GITHUB_OUTPUT
+          echo "AAB URL: $BUILD_URL"
+
+      # Download the AAB file from Expo (if built remotely)
+      - name: Download AAB
+        run: curl -o app-release.aab "${{ steps.get_aab_url.outputs.aab_url }}"
+
+      - name: Upload AAB artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release-${{ needs.setup.outputs.app_version }}
-          path: ${{ github.workspace }}/app-release-${{ needs.setup.outputs.app_version }}.apk
+          path: app-release.aab
 
   release:
     name: Release and Publish to Expo
-    # needs: build-android
+    needs: build-android
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' 
+    if: github.ref == 'refs/heads/master'
     permissions:
       contents: write
     steps:
@@ -96,70 +98,51 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20.10.0' # Or your preferred LTS version
+          node-version: '20.10.0'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Install EAS CLI
-        run: npm install -g eas-cli  # Consider npx eas
+        run: npm install -g eas-cli
 
       - name: Set up Expo
         uses: expo/expo-github-action@v8
         with:
-          expo-version: latest # Pin Expo SDK Version!
-          eas-version: latest # Pin EAS CLI Version!
+          expo-version: latest
+          eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
+      # Run Semantic Release to generate a new version tag
       - name: Semantic Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # NPM_TOKEN: ${{ secrets.NPM_TOKEN }} # Only if publishing to npm
         id: semantic_release
         run: npx semantic-release
 
-      - name: Build Expo app (Android)
-        if: steps.semantic_release.outcome == 'success' # Only build if semantic-release succeeded
-        run: eas build --platform android --profile production --clear-cache # Add --clear-cache to ensure a clean build
-    
-      - name: Find AAB file
-        if: steps.semantic_release.outcome == 'success'
-        id: find_aab
-        run: |
-          AAB_FILES=$(find . -iname "*.aab")
-
-          if [[ -z "$AAB_FILES" ]]; then
-            echo "::error::No AAB files found!"
-            exit 1
-          elif [[ $(echo "$AAB_FILES" | wc -l) -gt 1 ]]; then
-            echo "::error::Multiple AAB files found: $AAB_FILES. Please specify which one to upload."
-            exit 1
-          else
-            AAB_FILE=$(echo "$AAB_FILES" | head -n 1)
-            echo "aab_path=$AAB_FILE" >> $GITHUB_OUTPUT
-            echo "Found AAB file: $AAB_FILE"
-          fi
+      # Get the latest AAB from the build job
+      - name: Download AAB Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-release-${{ needs.setup.outputs.app_version }}
+          path: .
 
       - name: Upload AAB to GitHub Release
         if: steps.semantic_release.outcome == 'success'
         uses: softprops/action-gh-release@v1
         with:
-          files: ${{ steps.find_aab.outputs.aab_path }}
-          tag_name: ${{ github.ref_name }} # Ensure semantic-release actually creates a tag
-          name: "Release ${{ github.ref_name }}"
+          files: app-release.aab
+          tag_name: ${{ steps.semantic_release.outputs.new_release_version }}
+          name: "Release ${{ steps.semantic_release.outputs.new_release_version }}"
           body: "Automated release via GitHub Actions."
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Build Expo app (iOS)  # Uncomment if building for iOS
-      #   if: steps.semantic_release.outcome == 'success'
-      #   run: eas build --platform ios --profile production --clear-cache
-
-      - name: Upload artifacts
-        if: steps.semantic_release.outcome == 'success'  # Only upload if the build succeeded
+      - name: Upload Artifacts
+        if: steps.semantic_release.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
-          name: app-builds-${{ needs.setup.outputs.app_version }} # Include version in artifact name
-          path: dist # Or the directory where your builds are located
+          name: app-builds-${{ needs.setup.outputs.app_version }}
+          path: app-release.aab
