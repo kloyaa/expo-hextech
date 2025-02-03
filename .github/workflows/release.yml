@@ -33,7 +33,7 @@ jobs:
           echo "App Version: $APP_VERSION"
 
   build:
-    name: Build android
+    name: EAS Build
     runs-on: ubuntu-latest
     steps:
       - name: Setup repo
@@ -70,7 +70,6 @@ jobs:
       - name: Semantic Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # NPM_TOKEN: ${{ secrets.NPM_TOKEN }} # Only if publishing to npm
         id: semantic_release
         run: npx semantic-release
 
