@@ -69,43 +69,43 @@ jobs:
           eas build --platform android --profile production --no-wait
 
       # Fetch the latest AAB URL from Expo if using remote builds
-   - name: Find AAB file
-      if: steps.semantic_release.outcome == 'success'
-      id: find_aab
-      run: |
-        AAB_FILES=$(find . -iname "*.aab")
+      - name: Find AAB file
+          if: steps.semantic_release.outcome == 'success'
+          id: find_aab
+          run: |
+            AAB_FILES=$(find . -iname "*.aab")
 
-        if [[ -z "$AAB_FILES" ]]; then
-          echo "::error::No AAB files found!"
-          exit 1
-        elif [[ $(echo "$AAB_FILES" | wc -l) -gt 1 ]]; then
-          echo "::error::Multiple AAB files found: $AAB_FILES. Please specify which one to upload."
-          exit 1
-        else
-          AAB_FILE=$(echo "$AAB_FILES" | head -n 1)
-          echo "aab_path=$AAB_FILE" >> $GITHUB_OUTPUT
-          echo "Found AAB file: $AAB_FILE"
-        fi
+            if [[ -z "$AAB_FILES" ]]; then
+              echo "::error::No AAB files found!"
+              exit 1
+            elif [[ $(echo "$AAB_FILES" | wc -l) -gt 1 ]]; then
+              echo "::error::Multiple AAB files found: $AAB_FILES. Please specify which one to upload."
+              exit 1
+            else
+              AAB_FILE=$(echo "$AAB_FILES" | head -n 1)
+              echo "aab_path=$AAB_FILE" >> $GITHUB_OUTPUT
+              echo "Found AAB file: $AAB_FILE"
+            fi
 
-    - name: Upload AAB to GitHub Release
-      if: steps.semantic_release.outcome == 'success'
-      uses: softprops/action-gh-release@v1
-      with:
-        files: ${{ steps.find_aab.outputs.aab_path }} # Directly use the AAB path
-        tag_name: v${{ steps.semantic_release.outputs.version }}
-        name: "Release v${{ steps.semantic_release.outputs.version }}"
-        body: "Automated release via GitHub Actions."
-        draft: false
-        prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload AAB to GitHub Release
+        if: steps.semantic_release.outcome == 'success'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ steps.find_aab.outputs.aab_path }} # Directly use the AAB path
+          tag_name: v${{ steps.semantic_release.outputs.version }}
+          name: "Release v${{ steps.semantic_release.outputs.version }}"
+          body: "Automated release via GitHub Actions."
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Upload Artifacts
-      if: steps.semantic_release.outcome == 'success'
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-builds-v${{ steps.semantic_release.outputs.version }}
-        path: ${{ steps.find_aab.outputs.aab_path }}  # Directly use the AAB path
+      - name: Upload Artifacts
+        if: steps.semantic_release.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-builds-v${{ steps.semantic_release.outputs.version }}
+          path: ${{ steps.find_aab.outputs.aab_path }}  # Directly use the AAB path
 
   release:
     name: Release and Publish to Expo
