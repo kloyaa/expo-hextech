@@ -73,24 +73,24 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         id: semantic_release
         run: npx semantic-release
-        
-      - name: Find AAB file
-          if: steps.semantic_release.outcome == 'success'
-          id: find_aab
-          run: |
-            AAB_FILES=$(find . -iname "*.aab")
 
-            if [[ -z "$AAB_FILES" ]]; then
-              echo "::error::No AAB files found!"
-              exit 1
-            elif [[ $(echo "$AAB_FILES" | wc -l) -gt 1 ]]; then
-              echo "::error::Multiple AAB files found: $AAB_FILES. Please specify which one to upload."
-              exit 1
-            else
-              AAB_FILE=$(echo "$AAB_FILES" | head -n 1)
-              echo "aab_path=$AAB_FILE" >> $GITHUB_OUTPUT
-              echo "Found AAB file: $AAB_FILE"
-            fi
+      - name: Find AAB file
+        if: steps.semantic_release.outcome == 'success'
+        id: find_aab
+        run: |
+          AAB_FILES=$(find . -iname "*.aab")
+
+          if [[ -z "$AAB_FILES" ]]; then
+            echo "::error::No AAB files found!"
+            exit 1
+          elif [[ $(echo "$AAB_FILES" | wc -l) -gt 1 ]]; then
+            echo "::error::Multiple AAB files found: $AAB_FILES. Please specify which one to upload."
+            exit 1
+          else
+            AAB_FILE=$(echo "$AAB_FILES" | head -n 1)
+            echo "aab_path=$AAB_FILE" >> $GITHUB_OUTPUT
+            echo "Found AAB file: $AAB_FILE"
+          fi
 
       - name: Upload AAB to GitHub Release
         if: steps.semantic_release.outcome == 'success'
