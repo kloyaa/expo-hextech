@@ -33,6 +33,7 @@ jobs:
           echo "App Version: $APP_VERSION"
 
   build:
+    name: Build android
     runs-on: ubuntu-latest
     steps:
       - name: Setup repo
@@ -53,6 +54,12 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
       - name: Setup Expo
         uses: expo/expo-github-action@v8
         with:
@@ -60,14 +67,19 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install EAS CLI
-        run: npm install -g eas-cli
+      - name: Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # NPM_TOKEN: ${{ secrets.NPM_TOKEN }} # Only if publishing to npm
+        id: semantic_release
+        run: npx semantic-release
 
       - name: Build Android app
-        run: eas build --platform android --profile preview --local --output ${{ github.workspace }}/app-release.apk
+        run: |
+          set -e
+          echo "Starting EAS build for Android..."
+          eas build --platform android --profile preview --output ${{ github.workspace }}/app-release.apk --no-wait
+      
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
