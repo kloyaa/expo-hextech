@@ -69,31 +69,43 @@ jobs:
           eas build --platform android --profile production --no-wait
 
       # Fetch the latest AAB URL from Expo if using remote builds
-      - name: Get AAB URL
-        id: get_aab_url
-        run: |
-          BUILD_JSON=$(eas build:list --json --non-interactive --status=finished)
-          echo "Build JSON Output: $BUILD_JSON"  # Debugging step
+   - name: Find AAB file
+      if: steps.semantic_release.outcome == 'success'
+      id: find_aab
+      run: |
+        AAB_FILES=$(find . -iname "*.aab")
 
-          BUILD_URL=$(echo "$BUILD_JSON" | jq -r '.[0].artifacts.buildUrl // empty')
+        if [[ -z "$AAB_FILES" ]]; then
+          echo "::error::No AAB files found!"
+          exit 1
+        elif [[ $(echo "$AAB_FILES" | wc -l) -gt 1 ]]; then
+          echo "::error::Multiple AAB files found: $AAB_FILES. Please specify which one to upload."
+          exit 1
+        else
+          AAB_FILE=$(echo "$AAB_FILES" | head -n 1)
+          echo "aab_path=$AAB_FILE" >> $GITHUB_OUTPUT
+          echo "Found AAB file: $AAB_FILE"
+        fi
 
-          if [[ -z "$BUILD_URL" ]]; then
-            echo "::error::No completed EAS builds found!"
-            exit 1
-          fi
+    - name: Upload AAB to GitHub Release
+      if: steps.semantic_release.outcome == 'success'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ${{ steps.find_aab.outputs.aab_path }} # Directly use the AAB path
+        tag_name: v${{ steps.semantic_release.outputs.version }}
+        name: "Release v${{ steps.semantic_release.outputs.version }}"
+        body: "Automated release via GitHub Actions."
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-          echo "aab_url=$BUILD_URL" >> $GITHUB_OUTPUT
-          echo "AAB URL: $BUILD_URL"
-
-      # Download the AAB file from Expo (if built remotely)
-      - name: Download AAB
-        run: curl -o app-release.aab "${{ steps.get_aab_url.outputs.aab_url }}"
-
-      - name: Upload AAB artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release-${{ needs.setup.outputs.app_version }}
-          path: app-release.aab
+    - name: Upload Artifacts
+      if: steps.semantic_release.outcome == 'success'
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-builds-v${{ steps.semantic_release.outputs.version }}
+        path: ${{ steps.find_aab.outputs.aab_path }}  # Directly use the AAB path
 
   release:
     name: Release and Publish to Expo
