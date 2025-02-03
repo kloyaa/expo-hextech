@@ -66,17 +66,22 @@ jobs:
 
       - name: Build Android App with EAS
         run: |
-          eas build --platform android --profile production --non-interactive
+          eas build --platform android --profile production --no-wait
 
       # Fetch the latest AAB URL from Expo if using remote builds
       - name: Get AAB URL
         id: get_aab_url
         run: |
-          BUILD_URL=$(eas build:list --json | jq -r '.[0].artifacts.buildUrl')
+          BUILD_JSON=$(eas build:list --json)
+          echo "Build JSON Output: $BUILD_JSON"  # Debugging step
+
+          BUILD_URL=$(echo "$BUILD_JSON" | jq -r '.[0].artifacts.buildUrl // empty')
+
           if [[ -z "$BUILD_URL" ]]; then
-            echo "::error::No AAB file found on Expo servers!"
+            echo "::error::No completed EAS builds found!"
             exit 1
           fi
+
           echo "aab_url=$BUILD_URL" >> $GITHUB_OUTPUT
           echo "AAB URL: $BUILD_URL"
 
