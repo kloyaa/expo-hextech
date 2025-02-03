@@ -65,7 +65,7 @@ jobs:
         with:
           expo-version: latest
           eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+          token: ${{ secrets.HSI_TEST_EXPO_TOKEN }}
 
       - name: Semantic Release
         env:
@@ -77,7 +77,7 @@ jobs:
         run: |
           set -e
           echo "Starting EAS build for Android..."
-          eas build --platform android --profile production --no-wait --mesage "Automated update from GitHub Actions - v${{ needs.setup.outputs.app_version }}"
+          eas build --platform android --profile production --no-wait
       
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
