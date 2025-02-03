@@ -72,7 +72,7 @@ jobs:
       - name: Get AAB URL
         id: get_aab_url
         run: |
-          BUILD_JSON=$(eas build:list --json)
+          BUILD_JSON=$(eas build:list --json --non-interactive)
           echo "Build JSON Output: $BUILD_JSON"  # Debugging step
 
           BUILD_URL=$(echo "$BUILD_JSON" | jq -r '.[0].artifacts.buildUrl // empty')
