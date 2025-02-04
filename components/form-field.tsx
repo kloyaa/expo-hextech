@@ -1,55 +1,35 @@
 import {
-  KeyboardTypeOptions,
   StyleSheet,
   Text,
   TextInput,
   View,
-  ViewStyle,
-  TextStyle,
   TouchableOpacity,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { forwardRef, useState } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons'; // Install if not available
+import { FormFieldProps } from '@/interfaces/form.interface';
 
 // Define the props interface
-interface FormFieldProps {
-  title: string; // Title of the input field
-  value: string; // Value of the input field
-  placeholder: string; // Placeholder text
-  changeText: (text: string) => void; // Function to handle text changes
-  keyboardType?: KeyboardTypeOptions; // Keyboard type (optional)
-  containerStyles?: ViewStyle; // Custom styles for the container (optional)
-  inputStyles?: TextStyle; // Custom styles for the input (optional)
-  options?: {
-    isObscure: boolean;
-  };
-}
-const FormField: React.FC<FormFieldProps> = ({
-  title,
-  keyboardType,
-  value,
-  placeholder,
-  changeText,
-  containerStyles,
-  inputStyles,
-  options,
-}) => {
+
+const FormField = forwardRef<TextInput, FormFieldProps>((props, ref) => {
+  // Correct type definition
   const [togglePassword, setTogglePassword] = useState(false);
 
   return (
-    <View style={[styles.container, containerStyles]}>
-      <Text style={styles.title}>{title}</Text>
+    <View style={[styles.container, props.containerStyles]}>
+      <Text style={styles.title}>{props.title}</Text>
       <View style={styles.inputContainer}>
         <TextInput
-          style={[styles.input, inputStyles]}
-          keyboardType={keyboardType}
-          value={value}
-          placeholder={placeholder}
+          ref={ref} // Correct ref forwarding
+          style={[styles.input, props.inputStyles]}
+          keyboardType={props.keyboardType}
+          value={props.value}
+          placeholder={props.placeholder}
           placeholderTextColor="#7F7F7F"
-          onChangeText={changeText}
-          secureTextEntry={options?.isObscure && !togglePassword}
+          onChangeText={props.changeText}
+          secureTextEntry={props.options?.isObscure && !togglePassword}
         />
-        {options?.isObscure && (
+        {props.options?.isObscure && (
           <TouchableOpacity
             onPress={() => setTogglePassword(!togglePassword)}
             style={styles.icon}
@@ -64,7 +44,9 @@ const FormField: React.FC<FormFieldProps> = ({
       </View>
     </View>
   );
-};
+});
+
+FormField.displayName = 'FormField';
 
 const styles = StyleSheet.create({
   container: {
@@ -76,11 +58,10 @@ const styles = StyleSheet.create({
   input: {
     color: '#fff',
     flex: 1,
-    height: 40,
   },
   inputContainer: {
     alignItems: 'center',
-    borderColor: '#ccc',
+    borderColor: '#2c2c42',
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: 'row',

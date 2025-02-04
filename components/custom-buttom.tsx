@@ -29,8 +29,8 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   return (
     <TouchableOpacity
       style={[
-        containerStyles, // Custom container styles
         styles.buttonContainer,
+        containerStyles, // Custom container styles
         disabled && styles.disabledButton, // Conditional style for disabled state
         // isLoading && { opacity: 0.5 },
       ]}

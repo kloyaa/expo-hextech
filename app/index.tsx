@@ -45,9 +45,6 @@ export default function App(): JSX.Element {
                 router.push('/sign-in');
               }}
             />
-            <Text className="text-[12px] text-gray-600 my-3 text-center">
-              or
-            </Text>
             <CustomButton
               title={"Don't have an account?"}
               textStyles={styles.customButtonSignUpTextStyles}
@@ -73,11 +70,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   customButtonSignUpContainerStyles: {
-    backgroundColor: '#2c2c42',
+    backgroundColor: 'transparent',
     width: '100%',
   },
   customButtonSignUpTextStyles: {
-    color: '#fff',
+    color: '#2c2c42',
     fontSize: 14,
     fontWeight: '400',
   },

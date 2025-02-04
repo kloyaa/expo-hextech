@@ -1,17 +1,45 @@
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
-import React, { useState } from 'react';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import React, { forwardRef, useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { images } from '../../constants';
 import CustomButton from '@/components/custom-buttom';
-import { IFormState } from '@/interfaces/form.interface';
+import { FormFieldProps, IFormState } from '@/interfaces/form.interface';
 import FormField from '@/components/form-field';
 
+const FormFieldForwardRef = forwardRef<TextInput, Omit<FormFieldProps, 'ref'>>(
+  (props, ref) => <FormField ref={ref} {...props} />
+);
+
+FormFieldForwardRef.displayName = 'FormFieldRef'; // Add this line
+
 const SignIn = (): JSX.Element => {
+  const usernameRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
+
   const [form, setForm] = useState<IFormState>({
     email: '',
     password: '',
   });
+
+  const submit = (): void => {
+    if (form.email.trim() === '') {
+      return usernameRef.current?.focus();
+    }
+
+    if (form.password.trim() === '') {
+      return passwordRef.current?.focus();
+    }
+
+    console.log(form);
+  };
 
   return (
     <SafeAreaView className="bg-primary h-full">
@@ -27,18 +55,21 @@ const SignIn = (): JSX.Element => {
               Login to <Text className="text-secondary">Hextech</Text>
             </Text>
             <View className="w-full mt-[30px]">
-              <FormField
+              <FormFieldForwardRef
+                ref={usernameRef}
                 title="Email"
                 value={form.email}
                 placeholder="Enter your email"
-                changeText={(e) => {
+                changeText={(e: string) => {
                   setForm({
                     ...form,
                     email: e,
                   });
                 }}
               />
-              <FormField
+
+              <FormFieldForwardRef
+                ref={passwordRef}
                 title="Password"
                 value={form.password}
                 placeholder="Enter your password"
@@ -59,9 +90,7 @@ const SignIn = (): JSX.Element => {
             title={'Sign in'}
             containerStyles={styles.customButtonSignInContainerStyles}
             textStyles={styles.customButtonSignInTextStyles}
-            handlePress={() => {
-              // router.push("/sign-in");
-            }}
+            handlePress={submit}
           />
         </View>
       </ScrollView>
