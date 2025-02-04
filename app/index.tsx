@@ -2,7 +2,7 @@ import { View, ScrollView, Image, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
-import { router } from 'expo-router';
+import { Link, router } from 'expo-router';
 import CustomButton from '../components/custom-buttom';
 import { images } from '../constants';
 
@@ -36,7 +36,7 @@ export default function App(): JSX.Element {
             </Text>
           </View>
 
-          <View className="w-full flex justify-center items-center">
+          <View className="w-full ">
             <CustomButton
               title={'Get started'}
               containerStyles={styles.customButtonSignInContainerStyles}
@@ -45,14 +45,12 @@ export default function App(): JSX.Element {
                 router.push('/sign-in');
               }}
             />
-            <CustomButton
-              title={"Don't have an account?"}
-              textStyles={styles.customButtonSignUpTextStyles}
-              containerStyles={styles.customButtonSignUpContainerStyles}
-              handlePress={() => {
-                router.push('/sign-up');
-              }}
-            />
+            <Link href="/sign-up" className="mt-7">
+              <Text className="text-[12px] font-pregular text-gray-100 mt-7 text-center">
+                Don&apos;t have an account?{' '}
+                <Text className="text-secondary font-psemibold">Sign up</Text>
+              </Text>
+            </Link>
           </View>
         </View>
       </ScrollView>

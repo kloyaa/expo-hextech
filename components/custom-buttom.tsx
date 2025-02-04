@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF9F1C',
     borderRadius: 12,
     justifyContent: 'center',
-    minHeight: 52,
+    minHeight: 60,
     paddingHorizontal: 24, // Default background color
   },
   buttonText: {
