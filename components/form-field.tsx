@@ -7,14 +7,15 @@ import {
 } from 'react-native';
 import React, { forwardRef, useState } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons'; // Install if not available
-import { FormFieldProps } from '@/interfaces/form.interface';
+import {
+  CustomObscuredInputProps,
+  FormFieldProps,
+} from '@/interfaces/form.interface';
 
 // Define the props interface
 
-const FormField = forwardRef<TextInput, FormFieldProps>((props, ref) => {
+const CustomInput = forwardRef<TextInput, FormFieldProps>((props, ref) => {
   // Correct type definition
-  const [togglePassword, setTogglePassword] = useState(false);
-
   return (
     <View style={[styles.container, props.containerStyles]}>
       <Text style={styles.title}>{props.title}</Text>
@@ -22,31 +23,57 @@ const FormField = forwardRef<TextInput, FormFieldProps>((props, ref) => {
         <TextInput
           ref={ref} // Correct ref forwarding
           style={[styles.input, props.inputStyles]}
-          keyboardType={props.keyboardType}
           value={props.value}
           placeholder={props.placeholder}
           placeholderTextColor="#7F7F7F"
           onChangeText={props.changeText}
-          secureTextEntry={props.options?.isObscure && !togglePassword}
+          textContentType="none"
+          autoCorrect={false}
         />
-        {props.options?.isObscure && (
-          <TouchableOpacity
-            onPress={() => setTogglePassword(!togglePassword)}
-            style={styles.icon}
-          >
-            <Ionicons
-              name={togglePassword ? 'eye' : 'eye-off'}
-              size={20}
-              color="#7F7F7F"
-            />
-          </TouchableOpacity>
-        )}
       </View>
     </View>
   );
 });
 
-FormField.displayName = 'FormField';
+const CustomObscuredInput = forwardRef<TextInput, CustomObscuredInputProps>(
+  (props, ref) => {
+    const [toggle, setToggle] = useState(false);
+
+    return (
+      <View style={[styles.container, props.containerStyles]}>
+        <Text style={styles.title}>{props.title}</Text>
+        <View style={styles.inputContainer}>
+          <TextInput
+            ref={ref} // Correct ref forwarding
+            style={[styles.input, props.inputStyles]}
+            keyboardType="visible-password"
+            secureTextEntry={!toggle}
+            value={props.value}
+            placeholder={props.placeholder}
+            placeholderTextColor="#7F7F7F"
+            onChangeText={props.onChangeText}
+            autoCorrect={false}
+          />
+          {props.allowToggle && (
+            <TouchableOpacity
+              onPress={() => setToggle(!toggle)}
+              style={styles.icon}
+            >
+              <Ionicons
+                name={toggle ? 'eye' : 'eye-off'}
+                size={20}
+                color="#7F7F7F"
+              />
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+    );
+  }
+);
+
+CustomInput.displayName = 'CustomInput';
+CustomObscuredInput.displayName = 'CustomObscuredInput';
 
 const styles = StyleSheet.create({
   container: {
@@ -65,14 +92,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: 'row',
-    height: 50,
+    height: 60,
     paddingHorizontal: 10,
   },
   title: {
-    color: '#fff',
+    color: '#ddd',
     fontSize: 14,
-    marginBottom: 5,
+    marginBottom: 6,
   },
 });
 
-export default FormField;
+export { CustomInput, CustomObscuredInput };

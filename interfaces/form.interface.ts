@@ -6,8 +6,16 @@ import {
 } from 'react-native';
 
 export interface IFormState {
-  email: string;
+  username: string;
   password: string;
+  isSubmitting: boolean;
+}
+
+export interface ISignUpFormState {
+  username: string;
+  password: string;
+  confirmPassword: string;
+  isSubmitting: boolean;
 }
 
 export interface FormFieldProps {
@@ -21,5 +29,16 @@ export interface FormFieldProps {
   ref?: React.LegacyRef<TextInput> | undefined;
   options?: {
     isObscure: boolean;
+    allowToggle: boolean;
   };
+}
+
+export interface CustomObscuredInputProps {
+  title: string;
+  value: string;
+  placeholder: string;
+  onChangeText: (text: string) => void;
+  containerStyles?: ViewStyle;
+  inputStyles?: TextStyle;
+  allowToggle?: boolean;
 }

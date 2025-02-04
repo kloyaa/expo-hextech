@@ -12,25 +12,27 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { images } from '../../constants';
 import CustomButton from '@/components/custom-buttom';
 import { FormFieldProps, IFormState } from '@/interfaces/form.interface';
-import FormField from '@/components/form-field';
+import { Link } from 'expo-router';
+import { CustomInput } from '@/components/form-field';
 
 const FormFieldForwardRef = forwardRef<TextInput, Omit<FormFieldProps, 'ref'>>(
-  (props, ref) => <FormField ref={ref} {...props} />
+  (props, ref) => <CustomInput ref={ref} {...props} />
 );
 
-FormFieldForwardRef.displayName = 'FormFieldRef'; // Add this line
+FormFieldForwardRef.displayName = 'FormFieldRef';
 
 const SignIn = (): JSX.Element => {
   const usernameRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
 
   const [form, setForm] = useState<IFormState>({
-    email: '',
+    username: '',
     password: '',
+    isSubmitting: false,
   });
 
   const submit = (): void => {
-    if (form.email.trim() === '') {
+    if (form.username.trim() === '') {
       return usernameRef.current?.focus();
     }
 
@@ -52,22 +54,22 @@ const SignIn = (): JSX.Element => {
               resizeMode="contain"
             />
             <Text className="text-white font-plight text-[16px] text-center">
-              Login to <Text className="text-secondary">Hextech</Text>
+              Login to your <Text className="text-secondary">Hextech</Text>{' '}
+              account
             </Text>
             <View className="w-full mt-[30px]">
               <FormFieldForwardRef
                 ref={usernameRef}
                 title="Email"
-                value={form.email}
-                placeholder="Enter your email"
+                value={form.username}
+                placeholder="Enter your Username or Email"
                 changeText={(e: string) => {
                   setForm({
                     ...form,
-                    email: e,
+                    username: e,
                   });
                 }}
               />
-
               <FormFieldForwardRef
                 ref={passwordRef}
                 title="Password"
@@ -81,17 +83,27 @@ const SignIn = (): JSX.Element => {
                 }}
                 options={{
                   isObscure: true,
+                  allowToggle: true,
                 }}
               />
             </View>
           </View>
 
-          <CustomButton
-            title={'Sign in'}
-            containerStyles={styles.customButtonSignInContainerStyles}
-            textStyles={styles.customButtonSignInTextStyles}
-            handlePress={submit}
-          />
+          <View className="w-full">
+            <CustomButton
+              title={'Sign in'}
+              containerStyles={styles.customButtonSignInContainerStyles}
+              textStyles={styles.customButtonSignInTextStyles}
+              handlePress={submit}
+              isLoading={form.isSubmitting}
+            />
+            <Link href="/sign-up" className="mt-7">
+              <Text className="text-[12px] font-pregular text-gray-100 mt-7 text-center">
+                Don&apos;t have an account?{' '}
+                <Text className="text-secondary font-psemibold">Sign up</Text>
+              </Text>
+            </Link>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -109,5 +121,14 @@ const styles = StyleSheet.create({
   },
   customButtonSignInTextStyles: {
     fontSize: 14,
+  },
+  customButtonSignUpContainerStyles: {
+    backgroundColor: 'transparent',
+    width: '100%',
+  },
+  customButtonSignUpTextStyles: {
+    color: '#2c2c42',
+    fontSize: 14,
+    fontWeight: '400',
   },
 });
