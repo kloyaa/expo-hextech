@@ -64,6 +64,8 @@ const SignUp = (): JSX.Element => {
     if (password !== confirmPassword) {
       return confirmPasswordRef.current?.focus();
     }
+
+    console.log(form);
   };
 
   return (
